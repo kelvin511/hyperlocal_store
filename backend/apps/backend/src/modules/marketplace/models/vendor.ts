@@ -6,6 +6,8 @@ const Vendor = model.define("vendor", {
   handle: model.text().unique(),
   name: model.text(),
   logo: model.text().nullable(),
+  latitude: model.float(),
+  longitude: model.float(),
   admins: model.hasMany(() => VendorAdmin, {
     mappedBy: "vendor",
   }),
