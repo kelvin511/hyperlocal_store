@@ -17,14 +17,15 @@ export default defineMiddlewares({
       ],
     },
     {
-      matcher: "/vendors/register",
+      matcher: "/vendor/register",
       method: ["POST"],
       middlewares: [
         validateAndTransformBody(PostVendorRegisterSchema),
       ],
     },
     {
-      matcher: "/vendors/*",
+      method: ["GET", "POST", "PUT","PATCH", "DELETE"], 
+      matcher:/^\/vendor(?!\/(register|login)).*$/,
       middlewares: [
         authenticate("vendor", ["session", "bearer"]),
       ],

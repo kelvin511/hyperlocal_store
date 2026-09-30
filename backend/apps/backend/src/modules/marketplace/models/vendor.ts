@@ -4,7 +4,7 @@ import VendorAdmin from "./vendor-admin"
 const Vendor = model.define("vendor", {
   id: model.id().primaryKey(),
   handle: model.text().unique(),
-  name: model.text(),
+  name: model.text().nullable(),
   logo: model.text().nullable(),
   latitude: model.float(),
   longitude: model.float(),

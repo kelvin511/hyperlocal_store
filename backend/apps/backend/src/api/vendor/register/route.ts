@@ -9,14 +9,21 @@ import createVendorWorkflow, {
 } from "../../../workflows/marketplace/create-vendor"
 
 export const PostVendorRegisterSchema = z.strictObject({
-    name: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
-    handle: z.string().optional(),
-    logo: z.string().optional(),
+    name: z.string().trim().min(1),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+    handle: z
+        .string()
+        .trim()
+        .min(1)
+        .regex(
+            /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+            "handle must be lowercase alphanumeric characters separated by hyphens"
+        ),
+    logo: z.string().url().optional(),
     admin: z.strictObject({
-        email: z.string(),
-        password: z.string(),
+        email: z.string().trim().email(),
+        password: z.string().min(8),
         first_name: z.string().optional(),
         last_name: z.string().optional(),
     }),
@@ -37,7 +44,7 @@ export const POST = async (
         success,
         authIdentity,
         error,
-    } = await authModuleService.register("vendor", {
+    } = await authModuleService.register("emailpass", {
         url: req.url,
         body: {
             email: vendorData.admin.email,
@@ -59,6 +66,8 @@ export const POST = async (
                 name: vendorData.name,
                 handle: vendorData.handle,
                 logo: vendorData.logo,
+                latitude: vendorData.latitude,
+                longitude: vendorData.longitude,
                 admin: {
                     email: vendorData.admin.email,
                     first_name: vendorData.admin.first_name,
