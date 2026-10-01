@@ -79,3 +79,38 @@ export async function getMe(token: string) {
   );
   return vendor_admin;
 }
+
+export type Store = VendorAdmin["vendor"];
+
+export type UpdateStoreInput = {
+  name?: string;
+  handle?: string;
+  logo?: string | null;
+  latitude?: number;
+  longitude?: number;
+};
+
+const authHeaders = (token: string) => ({ Authorization: `Bearer ${token}` });
+
+export async function getStore(token: string) {
+  const { vendor } = await request<{ vendor: Store }>("/vendor/store", {
+    headers: authHeaders(token),
+  });
+  return vendor;
+}
+
+export async function updateStore(token: string, input: UpdateStoreInput) {
+  const { vendor } = await request<{ vendor: Store }>("/vendor/store", {
+    method: "PATCH",
+    headers: authHeaders(token),
+    body: JSON.stringify(input),
+  });
+  return vendor;
+}
+
+export async function deleteStore(token: string) {
+  await request("/vendor/store", {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+}

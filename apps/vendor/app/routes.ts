@@ -5,5 +5,8 @@ export default [
   route("register", "routes/register.tsx"),
   route("logout", "routes/logout.tsx"),
   // Everything nested under this layout requires a signed-in vendor.
-  layout("routes/protected.tsx", [index("routes/home.tsx")]),
+  layout("routes/protected.tsx", [
+    index("routes/home.tsx"),
+    route("store", "routes/store.tsx"),
+  ]),
 ] satisfies RouteConfig;

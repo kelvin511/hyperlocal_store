@@ -1,7 +1,8 @@
-import { Form, useRouteLoaderData } from "react-router";
+import { Form, Link, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/home";
 import type { loader as protectedLoader } from "./protected";
 import { Button } from "~/components/ui/button";
+import { useVendorStore } from "~/stores/vendor-store";
 import {
   Card,
   CardContent,
@@ -17,7 +18,8 @@ export function meta({}: Route.MetaArgs) {
 export default function Home() {
   const data = useRouteLoaderData<typeof protectedLoader>("routes/protected");
   if (!data) return null;
-  const { vendorAdmin } = data;
+  const storeAdmin = useVendorStore((s) => s.vendorAdmin);
+  const vendorAdmin = storeAdmin ?? data.vendorAdmin;
 
   return (
     <main className="mx-auto flex min-h-svh max-w-2xl items-center p-6">
@@ -28,7 +30,10 @@ export default function Home() {
           </CardTitle>
           <CardDescription>Signed in as {vendorAdmin.email}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex gap-3">
+          <Button nativeButton={false} render={<Link to="/store" />}>
+            Store settings
+          </Button>
           <Form method="post" action="/logout">
             <Button type="submit" variant="outline">
               Log out
