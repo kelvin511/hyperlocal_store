@@ -1,5 +1,6 @@
 import { authenticate, configureStoreSearch, defineMiddlewares, validateAndTransformBody } from '@medusajs/framework/http'
 import { PostVendorRegisterSchema } from './vendor/register/route'
+import { PatchVendorStoreSchema } from './vendor/store/route'
 
 // The product index declares filterable `status` and `sales_channel_ids`, so
 // the route narrows it to published products in the key's sales channels.
@@ -24,10 +25,17 @@ export default defineMiddlewares({
       ],
     },
     {
-      method: ["GET", "POST", "PUT","PATCH", "DELETE"], 
-      matcher:/^\/vendor(?!\/(register|login)).*$/,
+      method: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+      matcher: /^\/vendor\/(?!register(\/|$)).*$/,
       middlewares: [
         authenticate("vendor", ["session", "bearer"]),
+      ],
+    },
+    {
+      matcher: "/vendor/store",
+      method: ["PATCH"],
+      middlewares: [
+        validateAndTransformBody(PatchVendorStoreSchema),
       ],
     },
 

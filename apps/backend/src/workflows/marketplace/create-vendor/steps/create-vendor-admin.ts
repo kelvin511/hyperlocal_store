@@ -13,7 +13,7 @@ type CreateVendorAdminStepInput = {
 }
 
 const createVendorAdminStep = createStep(
-  "create-vendor-admin-step",
+  "create-vendor-admin",
   async (
     adminData: CreateVendorAdminStepInput, 
     { container }
@@ -38,7 +38,7 @@ const createVendorAdminStep = createStep(
     const marketplaceModuleService: MarketplaceModuleService = 
       container.resolve(MARKETPLACE_MODULE)
 
-    marketplaceModuleService.deleteVendorAdmins(vendorAdminId)
+    await marketplaceModuleService.softDeleteVendorAdmins(vendorAdminId)
   })
 
 export default createVendorAdminStep

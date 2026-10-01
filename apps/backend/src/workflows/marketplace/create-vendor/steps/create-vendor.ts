@@ -32,7 +32,7 @@ const createVendorStep = createStep(
     const marketplaceModuleService: MarketplaceModuleService = 
       container.resolve(MARKETPLACE_MODULE)
 
-    marketplaceModuleService.deleteVendors(vendorId)
+    await marketplaceModuleService.softDeleteVendors(vendorId)
   })
 
 export default createVendorStep
