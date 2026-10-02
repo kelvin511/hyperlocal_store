@@ -28,7 +28,7 @@ export const PatchVendorStoreSchema = z
     message: "At least one field must be provided",
   })
 
-type PatchVendorStoreBody = z.infer<typeof PatchVendorStoreSchema>
+export type PatchVendorStoreBody = z.infer<typeof PatchVendorStoreSchema>
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,

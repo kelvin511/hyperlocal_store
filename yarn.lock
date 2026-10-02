@@ -1175,6 +1175,7 @@ __metadata:
     "@medusajs/dashboard": "npm:2.21.2"
     "@medusajs/draft-order": "npm:2.21.2"
     "@medusajs/framework": "npm:2.21.2"
+    "@medusajs/js-sdk": "npm:2.21.2"
     "@medusajs/medusa": "npm:2.21.2"
     "@medusajs/test-utils": "npm:2.21.2"
     "@medusajs/ui": "npm:4.2.6"

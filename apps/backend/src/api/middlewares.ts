@@ -34,6 +34,20 @@ export default defineMiddlewares({
       ],
     },
     {
+      matcher: "/admin/vendors",
+      method: ["POST"],
+      middlewares: [
+        validateAndTransformBody(PostVendorRegisterSchema),
+      ],
+    },
+    {
+      matcher: "/admin/vendors/:id",
+      method: ["POST"],
+      middlewares: [
+        validateAndTransformBody(PatchVendorStoreSchema),
+      ],
+    },
+    {
       matcher: "/vendor/product",
       method: ["POST"],
       middlewares: [

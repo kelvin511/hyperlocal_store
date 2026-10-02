@@ -1,0 +1,45 @@
+export type VendorSummary = {
+  id: string
+  name: string | null
+  handle: string
+  logo: string | null
+  latitude: number
+  longitude: number
+  created_at: string
+}
+
+export type VendorAdminSummary = {
+  id: string
+  email: string
+  first_name: string | null
+  last_name: string | null
+}
+
+export type VendorDetail = VendorSummary & {
+  admins: VendorAdminSummary[]
+  product_count: number
+}
+
+export type VendorProductRow = {
+  id: string
+  title: string
+  thumbnail: string | null
+  status: string
+  price: number | null
+  currency_code: string | null
+  vendor: { id: string; name: string | null; handle: string } | null
+}
+
+export type VendorListResponse = {
+  vendors: VendorSummary[]
+  count: number
+  limit: number
+  offset: number
+}
+
+export type VendorProductListResponse = {
+  products: VendorProductRow[]
+  count: number
+  limit: number
+  offset: number
+}
