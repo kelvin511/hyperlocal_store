@@ -114,3 +114,76 @@ export async function deleteStore(token: string) {
     headers: authHeaders(token),
   });
 }
+
+export type Product = {
+  id: string
+  title: string
+  thumbnail: string | null
+  price: number | null
+  currency_code: string | null
+  available: boolean
+  created_at: string
+}
+
+export type ProductInput = {
+  title: string
+  thumbnail?: string | null
+  price: number
+  available: boolean
+}
+
+export type ProductList = {
+  products: Product[]
+  count: number
+  limit: number
+  offset: number
+}
+
+export async function listProducts(
+  token: string,
+  { limit, offset }: { limit: number; offset: number },
+) {
+  return request<ProductList>(`/vendor/product?limit=${limit}&offset=${offset}`, {
+    headers: authHeaders(token),
+  })
+}
+
+export async function getProduct(token: string, id: string) {
+  const { product } = await request<{ product: Product }>(
+    `/vendor/product/${id}`,
+    { headers: authHeaders(token) },
+  )
+  return product
+}
+
+export async function createProduct(token: string, input: ProductInput) {
+  const { product } = await request<{ product: Product }>("/vendor/product", {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(input),
+  })
+  return product
+}
+
+export async function updateProduct(
+  token: string,
+  id: string,
+  input: Partial<ProductInput>,
+) {
+  const { product } = await request<{ product: Product }>(
+    `/vendor/product/${id}`,
+    {
+      method: "PATCH",
+      headers: authHeaders(token),
+      body: JSON.stringify(input),
+    },
+  )
+  return product
+}
+
+export async function deleteProduct(token: string, id: string) {
+  await request(`/vendor/product/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  })
+}

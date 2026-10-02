@@ -6,7 +6,7 @@ import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/util
 import { z } from "@medusajs/framework/zod"
 import updateVendorWorkflow from "../../../workflows/marketplace/update-vendor"
 import deleteVendorWorkflow from "../../../workflows/marketplace/delete-vendor"
-import { getAuthenticatedVendorId } from "./helpers"
+import { getAuthenticatedVendorId } from "../helpers"
 
 export const PatchVendorStoreSchema = z
   .strictObject({

@@ -8,5 +8,8 @@ export default [
   layout("routes/protected.tsx", [
     index("routes/home.tsx"),
     route("store", "routes/store.tsx"),
+    route("products", "routes/products.tsx"),
+    route("products/new", "routes/products.new.tsx"),
+    route("products/:id", "routes/products.detail.tsx"),
   ]),
 ] satisfies RouteConfig;
