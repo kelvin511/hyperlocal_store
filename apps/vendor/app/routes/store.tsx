@@ -1,4 +1,5 @@
-import { Form, Link, redirect, useNavigation } from "react-router";
+import { useEffect, useState } from "react";
+import { Form, redirect, useNavigation } from "react-router";
 import type { Route } from "./+types/store";
 import { ApiError, deleteStore, getStore, updateStore } from "~/lib/api.server";
 import {
@@ -7,26 +8,19 @@ import {
   requireVendor,
 } from "~/lib/session.server";
 import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "~/components/ui/field";
+import { FieldError } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
+import {
+  Container,
+  ContainerHeader,
+  SectionRow,
+} from "~/components/container";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Store settings" }];
 }
+
+export const handle = { title: "Store settings" };
 
 export async function loader({ request }: Route.LoaderArgs) {
   await requireVendor(request);
@@ -74,111 +68,150 @@ export default function StoreSettings({
   const navigation = useNavigation();
   const submitting = navigation.state === "submitting";
   const deleting = submitting && navigation.formData?.get("intent") === "delete";
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    if (actionData?.saved) setEditing(false);
+  }, [actionData]);
 
   return (
-    <main className="mx-auto flex min-h-svh max-w-2xl flex-col justify-center gap-6 p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Store settings</CardTitle>
-          <CardDescription>Update how your store appears to customers.</CardDescription>
-        </CardHeader>
-        <Form method="post">
-          <CardContent>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="name">Store name</FieldLabel>
-                <Input id="name" name="name" defaultValue={store.name ?? ""} required />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="handle">Store handle</FieldLabel>
-                <Input
-                  id="handle"
-                  name="handle"
-                  pattern="[a-z0-9]+(-[a-z0-9]+)*"
-                  defaultValue={store.handle}
-                  required
-                />
-                <FieldDescription>
-                  Lowercase letters, numbers and hyphens only.
-                </FieldDescription>
-              </Field>
-              <div className="grid grid-cols-2 gap-4">
-                <Field>
-                  <FieldLabel htmlFor="latitude">Latitude</FieldLabel>
-                  <Input
-                    id="latitude"
-                    name="latitude"
-                    type="number"
-                    step="any"
-                    min={-90}
-                    max={90}
-                    defaultValue={store.latitude}
-                    required
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="longitude">Longitude</FieldLabel>
-                  <Input
-                    id="longitude"
-                    name="longitude"
-                    type="number"
-                    step="any"
-                    min={-180}
-                    max={180}
-                    defaultValue={store.longitude}
-                    required
-                  />
-                </Field>
-              </div>
-              <Field>
-                <FieldLabel htmlFor="logo">Logo URL (optional)</FieldLabel>
-                <Input id="logo" name="logo" type="url" defaultValue={store.logo ?? ""} />
-              </Field>
-              {actionData?.error && <FieldError>{actionData.error}</FieldError>}
-              {actionData?.saved && (
-                <p className="text-sm text-green-600">Store updated.</p>
-              )}
-            </FieldGroup>
-          </CardContent>
-          <CardFooter className="mt-4 gap-3">
-            <Button type="submit" name="intent" value="update" disabled={submitting}>
-              {submitting && !deleting ? "Saving..." : "Save changes"}
-            </Button>
-            <Button variant="outline" nativeButton={false} render={<Link to="/" />}>
-              Back
-            </Button>
-          </CardFooter>
-        </Form>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Delete store</CardTitle>
-          <CardDescription>
-            This removes your store and all of its admin accounts. You will be signed out.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Form
-            method="post"
-            onSubmit={(e) => {
-              if (!confirm("Delete this store? This cannot be undone from the panel.")) {
-                e.preventDefault();
+    <div className="flex flex-col gap-4">
+      <Container>
+        {editing ? (
+          <Form method="post" className="divide-border divide-y">
+            <ContainerHeader
+              title="Edit general information"
+              actions={
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setEditing(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value="update"
+                    size="lg"
+                    disabled={submitting}
+                  >
+                    {submitting && !deleting ? "Saving..." : "Save"}
+                  </Button>
+                </>
               }
-            }}
-          >
-            <Button
-              type="submit"
-              name="intent"
-              value="delete"
-              variant="destructive"
-              disabled={submitting}
-            >
-              {deleting ? "Deleting..." : "Delete store"}
-            </Button>
+            />
+            <SectionRow title="Name">
+              <Input name="name" defaultValue={store.name ?? ""} required />
+            </SectionRow>
+            <SectionRow title="Handle">
+              <Input
+                name="handle"
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                defaultValue={store.handle}
+                required
+              />
+              <p className="text-muted-foreground mt-1 text-xs">
+                Lowercase letters, numbers and hyphens only.
+              </p>
+            </SectionRow>
+            <SectionRow title="Logo URL">
+              <Input name="logo" type="url" defaultValue={store.logo ?? ""} />
+            </SectionRow>
+            <SectionRow title="Latitude">
+              <Input
+                name="latitude"
+                type="number"
+                step="any"
+                min={-90}
+                max={90}
+                defaultValue={store.latitude}
+                required
+              />
+            </SectionRow>
+            <SectionRow title="Longitude">
+              <Input
+                name="longitude"
+                type="number"
+                step="any"
+                min={-180}
+                max={180}
+                defaultValue={store.longitude}
+                required
+              />
+            </SectionRow>
+            {actionData?.error && (
+              <div className="px-6 py-3">
+                <FieldError>{actionData.error}</FieldError>
+              </div>
+            )}
           </Form>
-        </CardFooter>
-      </Card>
-    </main>
+        ) : (
+          <>
+            <ContainerHeader
+              title="General"
+              description="Your store details and location."
+              actions={
+                <Button variant="outline" size="lg" onClick={() => setEditing(true)}>
+                  Edit
+                </Button>
+              }
+            />
+            <dl className="divide-border divide-y">
+              <SectionRow title="Name">{store.name ?? "-"}</SectionRow>
+              <SectionRow title="Handle">{store.handle}</SectionRow>
+              <SectionRow title="Logo">
+                {store.logo ? (
+                  <img
+                    src={store.logo}
+                    alt={`${store.name ?? store.handle} logo`}
+                    className="size-10 rounded-md border object-cover"
+                  />
+                ) : (
+                  "-"
+                )}
+              </SectionRow>
+              <SectionRow title="Latitude">{store.latitude}</SectionRow>
+              <SectionRow title="Longitude">{store.longitude}</SectionRow>
+            </dl>
+            {actionData?.saved && (
+              <p className="px-6 py-3 text-[13px] text-green-600">
+                Your store has been updated.
+              </p>
+            )}
+          </>
+        )}
+      </Container>
+
+      <Container>
+        <ContainerHeader
+          title="Delete store"
+          description="Deleting your store also removes all of its admin accounts, and you will be signed out immediately."
+          actions={
+            <Form
+              method="post"
+              onSubmit={(e) => {
+                if (!confirm("Delete this store and all of its admin accounts?")) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              <Button
+                type="submit"
+                name="intent"
+                value="delete"
+                variant="destructive"
+                size="lg"
+                disabled={submitting}
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </Button>
+            </Form>
+          }
+        />
+      </Container>
+    </div>
   );
 }

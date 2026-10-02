@@ -1,46 +1,58 @@
-import { Form, Link, useRouteLoaderData } from "react-router";
-import type { Route } from "./+types/home";
-import type { loader as protectedLoader } from "./protected";
-import { Button } from "~/components/ui/button";
-import { useVendorStore } from "~/stores/vendor-store";
+import { Link, useRouteLoaderData } from "react-router"
+import type { Route } from "./+types/home"
+import type { loader as protectedLoader } from "./protected"
+import { useVendorStore } from "~/stores/vendor-store"
+import { Button } from "~/components/ui/button"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+  Container,
+  ContainerHeader,
+  SectionRow,
+} from "~/components/container"
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "Vendor dashboard" }];
+  return [{ title: "Vendor dashboard" }]
 }
 
+export const handle = { title: "Dashboard" }
+
 export default function Home() {
-  const data = useRouteLoaderData<typeof protectedLoader>("routes/protected");
-  if (!data) return null;
-  const storeAdmin = useVendorStore((s) => s.vendorAdmin);
-  const vendorAdmin = storeAdmin ?? data.vendorAdmin;
+  const data = useRouteLoaderData<typeof protectedLoader>("routes/protected")
+  const storeAdmin = useVendorStore((s) => s.vendorAdmin)
+  if (!data) return null
+  const { vendor } = storeAdmin ?? data.vendorAdmin
 
   return (
-    <main className="mx-auto flex min-h-svh max-w-2xl items-center p-6">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            {vendorAdmin.vendor.name ?? vendorAdmin.vendor.handle}
-          </CardTitle>
-          <CardDescription>Signed in as {vendorAdmin.email}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex gap-3">
-          <Button nativeButton={false} render={<Link to="/store" />}>
-            Store settings
-          </Button>
-          <Form method="post" action="/logout">
-            <Button type="submit" variant="outline">
-              Log out
+    <div className="flex flex-col gap-4">
+      <Container>
+        <ContainerHeader
+          title={`Welcome back, ${vendor.name ?? vendor.handle}`}
+          description="Here is an overview of your store."
+          actions={
+            <Button
+              variant="outline"
+              size="lg"
+              nativeButton={false}
+              render={<Link to="/store" />}
+            >
+              Store settings
             </Button>
-          </Form>
-        </CardContent>
-      </Card>
-    </main>
-  );
+          }
+        />
+        <dl className="divide-border divide-y">
+          <SectionRow title="Name">{vendor.name ?? "-"}</SectionRow>
+          <SectionRow title="Handle">{vendor.handle}</SectionRow>
+          <SectionRow title="Location">
+            {vendor.latitude.toFixed(4)}, {vendor.longitude.toFixed(4)}
+          </SectionRow>
+        </dl>
+      </Container>
+
+      <Container>
+        <ContainerHeader
+          title="Orders and products"
+          description="Product and order management will appear here."
+        />
+      </Container>
+    </div>
+  )
 }
