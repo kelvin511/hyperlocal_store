@@ -16,6 +16,7 @@ const getVendor = async (req: AuthenticatedMedusaRequest, id: string) => {
       "logo",
       "latitude",
       "longitude",
+      "status",
       "created_at",
       "admins.id",
       "admins.email",

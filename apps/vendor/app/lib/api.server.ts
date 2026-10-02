@@ -12,6 +12,7 @@ export type VendorAdmin = {
     logo: string | null;
     latitude: number;
     longitude: number;
+    status: "pending" | "approved" | "rejected" | "disabled";
   };
 };
 

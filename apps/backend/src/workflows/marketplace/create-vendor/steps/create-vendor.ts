@@ -4,6 +4,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { MARKETPLACE_MODULE } from "../../../../modules/marketplace"
 import MarketplaceModuleService from "../../../../modules/marketplace/service"
+import { VendorStatus } from "../../../../modules/marketplace/vendor-status"
 
 type CreateVendorStepInput = {
   name: string
@@ -11,6 +12,7 @@ type CreateVendorStepInput = {
   longitude: number
   handle?: string
   logo?: string
+  status?: VendorStatus
   
 }
 

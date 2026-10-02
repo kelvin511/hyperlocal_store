@@ -1,3 +1,5 @@
+export type VendorStatus = "pending" | "approved" | "rejected" | "disabled"
+
 export type VendorSummary = {
   id: string
   name: string | null
@@ -5,6 +7,7 @@ export type VendorSummary = {
   logo: string | null
   latitude: number
   longitude: number
+  status: VendorStatus
   created_at: string
 }
 

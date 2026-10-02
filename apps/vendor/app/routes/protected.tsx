@@ -5,6 +5,7 @@ import { requireVendor } from "~/lib/session.server"
 import { useVendorStore } from "~/stores/vendor-store"
 import { AppSidebar } from "~/components/app-sidebar"
 import { AppHeader } from "~/components/app-header"
+import { AccountStatusNotice } from "~/components/account-status-notice"
 
 export async function loader({ request }: Route.LoaderArgs) {
   return { vendorAdmin: await requireVendor(request) }
@@ -43,7 +44,11 @@ export default function Protected({ loaderData }: Route.ComponentProps) {
           userEmail={vendorAdmin.email}
         />
         <main className="mx-auto w-full max-w-4xl flex-1 p-4 sm:p-6">
-          <Outlet />
+          {vendorAdmin.vendor.status === "approved" ? (
+            <Outlet />
+          ) : (
+            <AccountStatusNotice status={vendorAdmin.vendor.status} />
+          )}
         </main>
       </div>
     </div>

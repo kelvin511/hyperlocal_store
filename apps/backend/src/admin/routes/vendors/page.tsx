@@ -4,10 +4,13 @@ import {
   Button,
   Container,
   createDataTableColumnHelper,
+  createDataTableFilterHelper,
   DataTable,
+  DataTableFilteringState,
   DataTablePaginationState,
   FocusModal,
   Heading,
+  StatusBadge,
   toast,
   useDataTable,
 } from "@medusajs/ui"
@@ -17,8 +20,24 @@ import { useNavigate } from "react-router-dom"
 import { VendorFormFields, useVendorForm } from "../../components/vendor-form"
 import { sdk } from "../../lib/client"
 import { VendorListResponse, VendorSummary } from "../../lib/types"
+import {
+  VENDOR_STATUS_COLORS,
+  VENDOR_STATUS_LABELS,
+} from "../../lib/vendor-status"
 
 const columnHelper = createDataTableColumnHelper<VendorSummary>()
+const filterHelper = createDataTableFilterHelper<VendorSummary>()
+
+const filters = [
+  filterHelper.accessor("status", {
+    type: "select",
+    label: "Status",
+    options: Object.entries(VENDOR_STATUS_LABELS).map(([value, label]) => ({
+      label,
+      value,
+    })),
+  }),
+]
 
 const columns = [
   columnHelper.accessor("name", {
@@ -31,6 +50,14 @@ const columns = [
     header: "Location",
     cell: ({ row }) =>
       `${row.original.latitude.toFixed(4)}, ${row.original.longitude.toFixed(4)}`,
+  }),
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: ({ getValue }) => (
+      <StatusBadge color={VENDOR_STATUS_COLORS[getValue()]}>
+        {VENDOR_STATUS_LABELS[getValue()]}
+      </StatusBadge>
+    ),
   }),
   columnHelper.accessor("created_at", {
     header: "Created",
@@ -48,16 +75,23 @@ const VendorsPage = () => {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   })
+  const [filtering, setFiltering] = useState<DataTableFilteringState>({})
   const [open, setOpen] = useState(false)
   const [form, setForm] = useVendorForm()
 
   const offset = pagination.pageIndex * pagination.pageSize
+  const statusFilter = typeof filtering.status === "string" ? filtering.status : ""
 
   const { data, isLoading } = useQuery({
-    queryKey: ["vendors", pagination.pageIndex, search],
+    queryKey: ["vendors", pagination.pageIndex, search, statusFilter],
     queryFn: () =>
       sdk.client.fetch<VendorListResponse>("/admin/vendors", {
-        query: { limit: pagination.pageSize, offset, q: search || undefined },
+        query: {
+          limit: pagination.pageSize,
+          offset,
+          q: search || undefined,
+          status: statusFilter || undefined,
+        },
       }),
   })
 
@@ -95,6 +129,14 @@ const VendorsPage = () => {
     getRowId: (vendor) => vendor.id,
     rowCount: data?.count ?? 0,
     isLoading,
+    filters,
+    filtering: {
+      state: filtering,
+      onFilteringChange: (state) => {
+        setFiltering(state)
+        setPagination({ ...pagination, pageIndex: 0 })
+      },
+    },
     onRowClick: (_, vendor) => navigate(`/vendors/${vendor.id}`),
     search: { state: search, onSearchChange: setSearch },
     pagination: { state: pagination, onPaginationChange: setPagination },
@@ -106,6 +148,7 @@ const VendorsPage = () => {
         <DataTable.Toolbar className="flex items-center justify-between px-6 py-4">
           <Heading>Vendors</Heading>
           <div className="flex items-center gap-x-2">
+            <DataTable.FilterMenu tooltip="Filter" />
             <DataTable.Search placeholder="Search vendors" />
             <Button size="small" onClick={() => setOpen(true)}>
               Create

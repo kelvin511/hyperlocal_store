@@ -1,4 +1,5 @@
 import { model } from "@medusajs/framework/utils"
+import { VENDOR_STATUSES } from "../vendor-status"
 import VendorAdmin from "./vendor-admin"
 
 const Vendor = model.define("vendor", {
@@ -8,6 +9,7 @@ const Vendor = model.define("vendor", {
   logo: model.text().nullable(),
   latitude: model.float(),
   longitude: model.float(),
+  status: model.enum([...VENDOR_STATUSES]).default("pending"),
   admins: model.hasMany(() => VendorAdmin, {
     mappedBy: "vendor",
   }),

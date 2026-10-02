@@ -4,6 +4,7 @@ import {
   Drawer,
   Heading,
   Prompt,
+  StatusBadge,
   Text,
   toast,
 } from "@medusajs/ui"
@@ -13,7 +14,64 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { VendorFormFields, useVendorForm } from "../../../components/vendor-form"
 import { ProductThumbnail } from "../../../components/product-thumbnail"
 import { sdk } from "../../../lib/client"
-import { VendorDetail, VendorProductListResponse } from "../../../lib/types"
+import {
+  VendorDetail,
+  VendorProductListResponse,
+  VendorStatus,
+} from "../../../lib/types"
+import {
+  VENDOR_STATUS_COLORS,
+  VENDOR_STATUS_LABELS,
+} from "../../../lib/vendor-status"
+
+const STATUS_ACTIONS: Record<
+  VendorStatus,
+  {
+    status: "approved" | "rejected" | "disabled"
+    label: string
+    description: string
+    danger: boolean
+  }[]
+> = {
+  pending: [
+    {
+      status: "approved",
+      label: "Approve",
+      description: "The vendor will be able to sign in and manage products.",
+      danger: false,
+    },
+    {
+      status: "rejected",
+      label: "Reject",
+      description: "The vendor registration will be rejected.",
+      danger: true,
+    },
+  ],
+  approved: [
+    {
+      status: "disabled",
+      label: "Disable",
+      description: "The vendor will no longer be able to manage products.",
+      danger: true,
+    },
+  ],
+  rejected: [
+    {
+      status: "approved",
+      label: "Approve",
+      description: "The vendor will be able to sign in and manage products.",
+      danger: false,
+    },
+  ],
+  disabled: [
+    {
+      status: "approved",
+      label: "Enable",
+      description: "The vendor will be able to manage products again.",
+      danger: false,
+    },
+  ],
+}
 
 const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="grid grid-cols-2 items-center px-6 py-4">
@@ -68,6 +126,20 @@ const VendorDetailPage = () => {
     onError: (error) => toast.error(error.message || "Failed to update vendor"),
   })
 
+  const updateStatus = useMutation({
+    mutationFn: (status: "approved" | "rejected" | "disabled") =>
+      sdk.client.fetch(`/admin/vendors/${id}/status`, {
+        method: "POST",
+        body: { status },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor", id] })
+      queryClient.invalidateQueries({ queryKey: ["vendors"] })
+      toast.success("Vendor status updated")
+    },
+    onError: (error) => toast.error(error.message || "Failed to update status"),
+  })
+
   const deleteVendor = useMutation({
     mutationFn: () => sdk.client.fetch(`/admin/vendors/${id}`, { method: "DELETE" }),
     onSuccess: () => {
@@ -109,8 +181,40 @@ const VendorDetailPage = () => {
     <div className="flex flex-col gap-y-3">
       <Container className="divide-y p-0">
         <div className="flex items-center justify-between px-6 py-4">
-          <Heading>{vendor.name ?? vendor.handle}</Heading>
+          <div className="flex items-center gap-x-3">
+            <Heading>{vendor.name ?? vendor.handle}</Heading>
+            <StatusBadge color={VENDOR_STATUS_COLORS[vendor.status]}>
+              {VENDOR_STATUS_LABELS[vendor.status]}
+            </StatusBadge>
+          </div>
           <div className="flex items-center gap-x-2">
+            {STATUS_ACTIONS[vendor.status].map((action) => (
+              <Prompt key={action.status}>
+                <Prompt.Trigger asChild>
+                  <Button
+                    size="small"
+                    variant={action.danger ? "secondary" : "primary"}
+                    disabled={updateStatus.isPending}
+                  >
+                    {action.label}
+                  </Button>
+                </Prompt.Trigger>
+                <Prompt.Content>
+                  <Prompt.Header>
+                    <Prompt.Title>{action.label} vendor</Prompt.Title>
+                    <Prompt.Description>{action.description}</Prompt.Description>
+                  </Prompt.Header>
+                  <Prompt.Footer>
+                    <Prompt.Cancel>Cancel</Prompt.Cancel>
+                    <Prompt.Action
+                      onClick={() => updateStatus.mutate(action.status)}
+                    >
+                      {action.label}
+                    </Prompt.Action>
+                  </Prompt.Footer>
+                </Prompt.Content>
+              </Prompt>
+            ))}
             <Button size="small" variant="secondary" onClick={openEdit}>
               Edit
             </Button>

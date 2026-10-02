@@ -1,5 +1,6 @@
 import { MedusaRequest } from "@medusajs/framework/http"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
+import { VendorStatus } from "../../../modules/marketplace/vendor-status"
 import createVendorWorkflow, {
   CreateVendorWorkflowInput,
 } from "../../../workflows/marketplace/create-vendor"
@@ -10,7 +11,8 @@ type RegisterVendorData = Omit<CreateVendorWorkflowInput, "authIdentityId" | "ad
 
 export const registerVendor = async (
   req: MedusaRequest,
-  vendorData: RegisterVendorData
+  vendorData: RegisterVendorData,
+  status?: VendorStatus
 ) => {
   const authModuleService = req.scope.resolve(Modules.AUTH)
 
@@ -38,6 +40,7 @@ export const registerVendor = async (
       name: vendorData.name,
       handle: vendorData.handle,
       logo: vendorData.logo,
+      status,
       latitude: vendorData.latitude,
       longitude: vendorData.longitude,
       admin: {

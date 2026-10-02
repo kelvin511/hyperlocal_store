@@ -9,6 +9,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import createVendorAdminStep from "./steps/create-vendor-admin"
 import createVendorStep from "./steps/create-vendor"
+import { VendorStatus } from "../../../modules/marketplace/vendor-status"
 
 export type CreateVendorWorkflowInput = {
     name: string
@@ -16,6 +17,7 @@ export type CreateVendorWorkflowInput = {
     longitude: number
     handle?: string
     logo?: string
+    status?: VendorStatus
     admin: {
         email: string
         first_name?: string
@@ -31,6 +33,7 @@ const createVendorWorkflow = createWorkflow(
             name: input.name,
             handle: input.handle,
             logo: input.logo,
+            status: input.status,
             latitude: input.latitude,
             longitude: input.longitude,
         })
@@ -56,7 +59,7 @@ const createVendorWorkflow = createWorkflow(
         })
         const { data: vendorWithAdmin } = useQueryGraphStep({
             entity: "vendor",
-            fields: ["id", "name","latitude", "longitude", "handle", "logo", "admins.*"],
+            fields: ["id", "name","latitude", "longitude", "handle", "logo", "status", "admins.*"],
             filters: {
                 id: vendor.id,
             },

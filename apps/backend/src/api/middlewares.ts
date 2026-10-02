@@ -2,6 +2,7 @@ import { authenticate, configureStoreSearch, defineMiddlewares, validateAndTrans
 import { PostVendorRegisterSchema } from './vendor/register/route'
 import { PatchVendorStoreSchema } from './vendor/store/route'
 import { PostVendorProductSchema } from './vendor/product/route'
+import { PostVendorStatusSchema } from "./admin/vendors/[id]/status/route"
 import { PatchVendorProductSchema } from './vendor/product/[id]/route'
 
 // The product index declares filterable `status` and `sales_channel_ids`, so
@@ -38,6 +39,13 @@ export default defineMiddlewares({
       method: ["POST"],
       middlewares: [
         validateAndTransformBody(PostVendorRegisterSchema),
+      ],
+    },
+    {
+      matcher: "/admin/vendors/:id/status",
+      method: ["POST"],
+      middlewares: [
+        validateAndTransformBody(PostVendorStatusSchema),
       ],
     },
     {
