@@ -31,9 +31,16 @@ const getStoreDefaultsStep = createStep(
       )
     }
 
+    const { data: shippingProfiles } = await query.graph({
+      entity: "shipping_profile",
+      fields: ["id"],
+      filters: { type: "default" },
+    })
+
     return new StepResponse({
       currency_code: currencyCode,
       sales_channel_id: store?.default_sales_channel_id ?? null,
+      shipping_profile_id: shippingProfiles[0]?.id ?? null,
     })
   }
 )

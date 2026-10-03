@@ -50,6 +50,7 @@ const createVendorProductWorkflow = createWorkflow(
                 ],
               },
             ],
+            shipping_profile_id: storeDefaults.shipping_profile_id ?? undefined,
             sales_channels: storeDefaults.sales_channel_id
               ? [{ id: storeDefaults.sales_channel_id }]
               : undefined,
