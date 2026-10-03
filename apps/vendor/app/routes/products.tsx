@@ -85,6 +85,7 @@ export default function Products({
               <tr className="border-border border-b">
                 <th className="px-6 py-2 font-medium">Product</th>
                 <th className="px-3 py-2 font-medium">Price</th>
+                <th className="px-3 py-2 font-medium">Stock</th>
                 <th className="px-3 py-2 font-medium">Availability</th>
                 <th className="px-6 py-2" />
               </tr>
@@ -108,6 +109,23 @@ export default function Products({
                   </td>
                   <td className="px-3 py-3">
                     {formatPrice(product.price, product.currency_code)}
+                  </td>
+                  <td className="px-3 py-3">
+                    {product.stock === null ? (
+                      <span className="text-muted-foreground">Not tracked</span>
+                    ) : product.stock === 0 ? (
+                      <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs text-red-700">
+                        Out of stock
+                      </span>
+                    ) : (
+                      <span
+                        className={
+                          product.stock <= 10 ? "text-amber-600" : undefined
+                        }
+                      >
+                        {product.stock}
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-3">
                     <span

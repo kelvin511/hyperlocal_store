@@ -11,6 +11,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { MARKETPLACE_MODULE } from "../../../../modules/marketplace"
 import getStoreDefaultsStep from "./steps/get-store-defaults"
+import setVariantStockWorkflow from "../set-variant-stock"
 import { VENDOR_PRODUCT_FIELDS } from "../vendor-product-fields"
 
 export type CreateVendorProductWorkflowInput = {
@@ -18,6 +19,7 @@ export type CreateVendorProductWorkflowInput = {
   title: string
   price: number
   available: boolean
+  stock: number
   thumbnail?: string
 }
 
@@ -41,7 +43,7 @@ const createVendorProductWorkflow = createWorkflow(
               {
                 title: "Default",
                 options: { Default: "Default" },
-                manage_inventory: false,
+                manage_inventory: true,
                 prices: [
                   {
                     amount: input.price,
@@ -62,6 +64,13 @@ const createVendorProductWorkflow = createWorkflow(
     const products = createProductsWorkflow.runAsStep({
       input: productsInput,
     })
+
+    const stockInput = transform({ input, products }, ({ input, products }) => ({
+      variant_id: products[0].variants?.[0]?.id as string,
+      quantity: input.stock,
+    }))
+
+    setVariantStockWorkflow.runAsStep({ input: stockInput })
 
     const links = transform({ input, products }, ({ input, products }) =>
       products.map((product) => ({

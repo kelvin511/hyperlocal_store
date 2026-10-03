@@ -78,6 +78,19 @@ export function ProductForm({
             </p>
           )}
         </SectionRow>
+        <SectionRow title="Stock">
+          <Input
+            name="stock"
+            type="number"
+            step="1"
+            min={0}
+            defaultValue={product?.stock ?? 0}
+            required
+          />
+          <p className="text-muted-foreground mt-1 text-xs">
+            Units in stock. Customers cannot order more than this.
+          </p>
+        </SectionRow>
         <SectionRow title="Availability">
           <select
             name="available"

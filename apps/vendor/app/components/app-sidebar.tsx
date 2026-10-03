@@ -5,6 +5,7 @@ import {
   Cancel01Icon,
   DashboardSquare01Icon,
   Settings01Icon,
+  ShoppingBag01Icon,
   ShoppingBasket01Icon,
 } from "@hugeicons/core-free-icons"
 import { cn } from "cn"
@@ -14,6 +15,7 @@ import { useUiStore } from "~/stores/ui-store"
 const navItems = [
   { to: "/", label: "Dashboard", icon: DashboardSquare01Icon, end: true },
   { to: "/products", label: "Products", icon: ShoppingBasket01Icon, end: false },
+  { to: "/orders", label: "Orders", icon: ShoppingBag01Icon, end: false },
   { to: "/store", label: "Store settings", icon: Settings01Icon, end: false },
 ]
 

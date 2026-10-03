@@ -16,7 +16,7 @@ export const PostVendorRegisterSchema = z.strictObject({
     ),
   logo: z.string().url().optional(),
   admin: z.strictObject({
-    email: z.string().trim().email(),
+    email: z.string().trim().toLowerCase().email(),
     password: z.string().min(8),
     first_name: z.string().optional(),
     last_name: z.string().optional(),

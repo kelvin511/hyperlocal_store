@@ -17,6 +17,7 @@ export const PatchVendorProductSchema = z
     title: z.string().trim().min(1).optional(),
     thumbnail: z.string().url().nullable().optional(),
     price: z.number().min(0).optional(),
+    stock: z.number().int().min(0).optional(),
     available: z.boolean().optional(),
   })
   .refine((body) => Object.keys(body).length > 0, {

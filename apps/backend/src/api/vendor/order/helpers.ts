@@ -3,13 +3,15 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
 } from "@medusajs/framework/utils"
+import { toNumber } from "../../../utils/numbers"
 
 type RawItem = {
   id: string
   title: string
   product_title?: string | null
   thumbnail?: string | null
-  quantity: number
+  detail?: { quantity?: unknown } | null
+  quantity?: unknown
   unit_price: number
   product_id?: string | null
 }
@@ -50,7 +52,7 @@ const ORDER_FIELDS = [
   "items.title",
   "items.product_title",
   "items.thumbnail",
-  "items.quantity",
+  "items.detail.quantity",
   "items.unit_price",
   "items.product_id",
   "shipping_address.first_name",
@@ -71,8 +73,8 @@ const toVendorOrder = (order: RawOrder, vendorProductIds: Set<string>) => {
       id: item.id,
       title: item.product_title ?? item.title,
       thumbnail: item.thumbnail ?? null,
-      quantity: item.quantity,
-      unit_price: Number(item.unit_price),
+      quantity: toNumber(item.detail?.quantity ?? item.quantity),
+      unit_price: toNumber(item.unit_price),
     }))
 
   return {

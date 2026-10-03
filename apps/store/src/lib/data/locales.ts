@@ -1,5 +1,6 @@
 "use server"
 
+import { dataCache } from "@lib/util/data-cache"
 import { sdk } from "@lib/config"
 import { getCacheOptions } from "./cookies"
 
@@ -21,7 +22,7 @@ export const listLocales = async (): Promise<Locale[] | null> => {
     .fetch<{ locales: Locale[] }>(`/store/locales`, {
       method: "GET",
       next,
-      cache: "force-cache",
+      cache: dataCache,
     })
     .then(({ locales }) => locales)
     .catch(() => null)

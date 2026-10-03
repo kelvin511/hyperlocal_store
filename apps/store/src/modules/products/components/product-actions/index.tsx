@@ -116,6 +116,10 @@ export default function ProductActions({
     return false
   }, [selectedVariant])
 
+  const hasPrice =
+    selectedVariant?.calculated_price?.calculated_amount !== undefined &&
+    selectedVariant?.calculated_price?.calculated_amount !== null
+
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
@@ -167,6 +171,7 @@ export default function ProductActions({
           disabled={
             !inStock ||
             !selectedVariant ||
+            !hasPrice ||
             !!disabled ||
             isAdding ||
             !isValidVariant
@@ -180,6 +185,8 @@ export default function ProductActions({
             ? "Select variant"
             : !inStock || !isValidVariant
             ? "Out of stock"
+            : !hasPrice
+            ? "Not available in your region"
             : "Add to cart"}
         </Button>
         <MobileActions
@@ -187,7 +194,7 @@ export default function ProductActions({
           variant={selectedVariant}
           options={options}
           updateOptions={setOptionValue}
-          inStock={inStock}
+          inStock={inStock && hasPrice}
           handleAddToCart={handleAddToCart}
           isAdding={isAdding}
           show={!inView}

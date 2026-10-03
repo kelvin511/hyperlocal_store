@@ -7,6 +7,7 @@ import {
 export type ProductVendor = {
   id: string
   name: string | null
+  handle: string
   status: string
 }
 
@@ -24,7 +25,7 @@ export const getVendorsByProductIds = async (
 
   const { data: products } = await query.graph({
     entity: "product",
-    fields: ["id", "vendor.id", "vendor.name", "vendor.status"],
+    fields: ["id", "vendor.id", "vendor.name", "vendor.handle", "vendor.status"],
     filters: { id: productIds },
   })
 

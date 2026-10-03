@@ -46,3 +46,16 @@ export type VendorProductListResponse = {
   limit: number
   offset: number
 }
+
+export type OrderVendorsResponse = {
+  currency_code: string
+  unassigned_item_count: number
+  vendors: {
+    id: string
+    name: string | null
+    handle: string
+    status: string
+    subtotal: number
+    items: { id: string; title: string; quantity: number; unit_price: number }[]
+  }[]
+}

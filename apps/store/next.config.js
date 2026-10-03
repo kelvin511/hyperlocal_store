@@ -25,6 +25,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // Vendors paste product image URLs from any host, so skip host validation.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
@@ -41,6 +43,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname:"picsum.photos"
       },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [

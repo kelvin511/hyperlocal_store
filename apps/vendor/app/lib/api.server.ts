@@ -122,6 +122,7 @@ export type Product = {
   thumbnail: string | null
   price: number | null
   currency_code: string | null
+  stock: number | null
   available: boolean
   created_at: string
 }
@@ -130,6 +131,7 @@ export type ProductInput = {
   title: string
   thumbnail?: string | null
   price: number
+  stock: number
   available: boolean
 }
 
@@ -187,4 +189,62 @@ export async function deleteProduct(token: string, id: string) {
     method: "DELETE",
     headers: authHeaders(token),
   })
+}
+
+export type OrderItem = {
+  id: string
+  title: string
+  thumbnail: string | null
+  quantity: number
+  unit_price: number
+}
+
+export type OrderAddress = {
+  first_name?: string | null
+  last_name?: string | null
+  phone?: string | null
+  address_1?: string | null
+  address_2?: string | null
+  city?: string | null
+  province?: string | null
+  postal_code?: string | null
+  country_code?: string | null
+}
+
+export type VendorOrder = {
+  id: string
+  display_id: number | string | null
+  status: string
+  payment_status: string | null
+  fulfillment_status: string | null
+  currency_code: string
+  created_at: string
+  customer_email: string | null
+  shipping_address: OrderAddress | null
+  items: OrderItem[]
+  subtotal: number
+}
+
+export type OrderList = {
+  orders: VendorOrder[]
+  count: number
+  limit: number
+  offset: number
+}
+
+export async function listOrders(
+  token: string,
+  { limit, offset }: { limit: number; offset: number },
+) {
+  return request<OrderList>(`/vendor/order?limit=${limit}&offset=${offset}`, {
+    headers: authHeaders(token),
+  })
+}
+
+export async function getOrder(token: string, id: string) {
+  const { order } = await request<{ order: VendorOrder }>(
+    `/vendor/order/${id}`,
+    { headers: authHeaders(token) },
+  )
+  return order
 }

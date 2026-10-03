@@ -1,5 +1,6 @@
 "use server"
 
+import { dataCache } from "@lib/util/data-cache"
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 
@@ -30,7 +31,7 @@ export const retrieveVariant = async (
         },
         headers,
         next,
-        cache: "force-cache",
+        cache: dataCache,
       }
     )
     .then(({ variant }) => variant)

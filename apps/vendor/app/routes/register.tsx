@@ -45,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
     logo: get("logo"),
     first_name: get("first_name"),
     last_name: get("last_name"),
-    email: get("email"),
+    email: get("email").toLowerCase(),
   };
   const password = String(form.get("password") ?? "");
   const confirm = String(form.get("confirm_password") ?? "");

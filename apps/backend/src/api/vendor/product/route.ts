@@ -15,6 +15,7 @@ export const PostVendorProductSchema = z.strictObject({
   title: z.string().trim().min(1),
   thumbnail: z.string().url().optional(),
   price: z.number().min(0),
+  stock: z.number().int().min(0).default(0),
   available: z.boolean().default(true),
 })
 

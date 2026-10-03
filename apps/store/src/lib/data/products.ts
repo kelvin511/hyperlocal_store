@@ -1,5 +1,6 @@
 "use server"
 
+import { dataCache } from "@lib/util/data-cache"
 import { sdk } from "@lib/config"
 import { sortProducts } from "@lib/util/sort-products"
 import { HttpTypes } from "@medusajs/types"
@@ -68,7 +69,7 @@ export const listProducts = async ({
         },
         headers,
         next,
-        cache: "force-cache",
+        cache: dataCache,
       }
     )
     .then(({ products, count }) => {

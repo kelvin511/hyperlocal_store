@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
+import { dataCache } from "@lib/util/data-cache"
 
 const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
@@ -28,11 +29,14 @@ async function getRegionMap(cacheId: string) {
       headers: {
         "x-publishable-api-key": PUBLISHABLE_API_KEY!,
       },
-      next: {
-        revalidate: 3600,
-        tags: [`regions-${cacheId}`],
-      },
-      cache: "force-cache",
+      next:
+        dataCache === "no-store"
+          ? undefined
+          : {
+              revalidate: 3600,
+              tags: [`regions-${cacheId}`],
+            },
+      cache: dataCache,
     }).then(async (response) => {
       const json = await response.json()
 
