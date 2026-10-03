@@ -3,6 +3,7 @@ import { PostVendorRegisterSchema } from './vendor/register/route'
 import { PatchVendorStoreSchema } from './vendor/store/route'
 import { PostVendorProductSchema } from './vendor/product/route'
 import { PostVendorStatusSchema } from "./admin/vendors/[id]/status/route"
+import { PostCustomerLocationSchema } from "./store/customers/me/location/route"
 import { PatchVendorProductSchema } from './vendor/product/[id]/route'
 
 // The product index declares filterable `status` and `sales_channel_ids`, so
@@ -32,6 +33,20 @@ export default defineMiddlewares({
       matcher: /^\/vendor\/(?!register(\/|$)).*$/,
       middlewares: [
         authenticate("vendor", ["session", "bearer"]),
+      ],
+    },
+    {
+      matcher: "/store/customers/me/location",
+      method: ["GET", "POST", "DELETE"],
+      middlewares: [
+        authenticate("customer", ["session", "bearer"]),
+      ],
+    },
+    {
+      matcher: "/store/customers/me/location",
+      method: ["POST"],
+      middlewares: [
+        validateAndTransformBody(PostCustomerLocationSchema),
       ],
     },
     {

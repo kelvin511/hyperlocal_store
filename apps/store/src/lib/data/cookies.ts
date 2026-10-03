@@ -87,3 +87,25 @@ export const removeCartId = async () => {
     maxAge: -1,
   })
 }
+
+export const getLocationCookie = async () => {
+  const cookies = await nextCookies()
+  return cookies.get("_medusa_location")?.value
+}
+
+export const setLocationCookie = async (value: string) => {
+  const cookies = await nextCookies()
+  cookies.set("_medusa_location", value, {
+    maxAge: 60 * 60 * 24 * 365,
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  })
+}
+
+export const removeLocationCookie = async () => {
+  const cookies = await nextCookies()
+  cookies.set("_medusa_location", "", {
+    maxAge: -1,
+  })
+}
